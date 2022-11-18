@@ -1,12 +1,22 @@
+import sys
+from logging import Formatter, StreamHandler, getLogger
 from typing import Any
 import json
 import socket
 from dataclasses import dataclass, asdict, fields, replace, is_dataclass, field
 import select
 
-from golf.logger import get_logger
+LOG_FORMAT = "%(asctime)s - %(levelname)s - %(name)s:%(lineno)d - %(message)s"
 
-logger = get_logger(__name__)
+LOGLEVEL = "DEBUG"
+handler = StreamHandler(sys.stdout)
+handler.setFormatter(Formatter(LOG_FORMAT))
+handler.setLevel(LOGLEVEL)
+
+logger = getLogger(__name__)
+logger.setLevel(LOGLEVEL)
+logger.addHandler(handler)
+logger.propagate = False
 
 
 @dataclass
@@ -119,6 +129,24 @@ class GSProSession:
 
     def close(self):
         self.sock.close()
+
+
+shot_db = {
+    "100": BallData(
+        Speed=81.4,
+        VLA=28.7,
+        HLA=0.7,
+        TotalSpin=8775,
+        SpinAxis=-3.4
+    ),
+    "150": BallData(
+        Speed=108,
+        VLA=22.2,
+        HLA=-1.5,
+        TotalSpin=5650,
+        SpinAxis=-0.9
+    ),
+}
 
 
 def asdict_ignore_none(obj) -> dict[str, Any]:
